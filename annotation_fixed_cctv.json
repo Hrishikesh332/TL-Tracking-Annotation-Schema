@@ -1,0 +1,129 @@
+{
+  "type": "segment_definitions",
+  "segment_time_format": "seconds",
+  "segment_definitions": [
+    {
+      "id": "annotations",
+      "description": "Treat the source as fixed-camera CCTV of a field-service work area. Partition the complete supplied timeline into consecutive, non-overlapping clips with no gaps; do not infer service-session boundaries. Start a new clip when the scene, visible technician activity, technician-equipment interaction, equipment state, safety state, SOP evidence, tool, or part meaningfully changes. Give precise boundaries to visible review moments such as suspended loads, load guiding, a person entering or leaving the apparent load area, work from a truck bed or elevated surface, PPE visibility changes, moving vehicles or machinery near people, and material state changes. Include idle periods. Report only observable evidence. Do not summarize a long interval using only its dominant activity. Each clip is one bounded semantic observation and must be no longer than $maximum_segment_seconds seconds. When visible activity is unchanged, emit the next consecutive observation with the same semantics; that boundary is continued observation, not a new action. Do not identify people, infer a technician, worker, operator, or engineer role from location, clothing, or PPE, infer intent or hidden contact, read QR codes, perform OCR, or identify equipment from configured asset regions.",
+      "fields": [
+        {
+          "name": "review_question",
+          "type": "string",
+          "description": "Write one concise, specific question for a human reviewer to resolve a meaningful uncertainty or inspect a visible workflow or safety-review cue in this clip. Compose the question directly from the video evidence, naming the relevant observed activity or objects. Do not assume a hazard, hidden state, identity, intent, or compliance. Do not use a generic question or a stock checklist. Return an empty string when no useful evidence review is warranted."
+        },
+        {
+          "name": "review_label",
+          "type": "string",
+          "description": "A short descriptive title for the review_question, composed from this clip. Return an empty string when review_question is empty."
+        },
+        {
+          "name": "review_reason",
+          "type": "string",
+          "description": "A concise factual explanation of the visible evidence or uncertainty motivating review_question. Do not invent facts or answer an unresolved question. Return an empty string when review_question is empty."
+        },
+        {
+          "name": "review_targets",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Up to five concrete visible object labels relevant to review_question that a reviewer could inspect in a frame. Use an empty array when no targets are visible or review_question is empty."
+        },
+        {
+          "name": "scene_caption",
+          "type": "string",
+          "description": "A concise factual caption describing the environment and visible scene"
+        },
+        {
+          "name": "environment",
+          "type": "string",
+          "description": "A short fixed-CCTV scene classification such as equipment room, service bay, workshop, utility area, or plant floor"
+        },
+        {
+          "name": "action_label",
+          "type": "string",
+          "description": "A concise present-tense verb phrase naming the primary action"
+        },
+        {
+          "name": "action_description",
+          "type": "string",
+          "description": "A precise natural-language description of the activity occurring in this clip"
+        },
+        {
+          "name": "broader_environment",
+          "type": "string",
+          "description": "Relevant visible activity beyond the immediate technician-equipment interaction, or none"
+        },
+        {
+          "name": "context_summary",
+          "type": "string",
+          "description": "One concise factual sentence joining the visible action, equipment interaction, equipment state, relevant tool or part, and broader scene. Mention only details visible in this clip and avoid repeating labels"
+        },
+        {
+          "name": "spatial_context",
+          "type": "string",
+          "description": "A concise description of visible task-relevant spatial relationships, such as a person beside an open panel or a tool on the floor; use not observable when occlusion or framing prevents this. Do not infer depth, contact, configured zones, or physical equipment identity"
+        },
+        {
+          "name": "evidence_quality",
+          "type": "string",
+          "description": "Choose exactly one: clear, partial, occluded, or not observable, based only on how well the primary activity and equipment interaction can be seen in this fixed-camera clip"
+        },
+        {
+          "name": "visible_objects",
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Distinct task-relevant objects visible during the clip"
+        },
+        {
+          "name": "localization_targets",
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Up to 16 canonical singular labels for concrete, boxable foreground things. Prioritize person, the interacted object, tools, parts, and safety-relevant objects. For lifting work, prefer concrete targets such as crane, suspended load, rebar bundle, hook block, sling, strap, tag line, pole, truck, hard hat, and safety vest when visible. Use person once for every visible human role and industrial machine for generic machinery. Each item must name one visible thing only; exclude duplicate synonyms or roles, actions, relations, states, text, invisible items, vague materials, cityscape, roads, sites, aisles, markings, floors, walls, rooms, zones, and other background regions"
+        },
+        {
+          "name": "technician_action",
+          "type": "string",
+          "description": "A concise present-tense description of the visible technician action, or none when no visible service interaction establishes that context. A person merely walking, passing, waiting, or standing must be none; never infer an occupational role from location, clothing, or PPE"
+        },
+        {
+          "name": "equipment_interaction",
+          "type": "string",
+          "description": "The visible interaction between a technician and equipment, tool, or part; use none when absent and not observable when occluded"
+        },
+        {
+          "name": "procedure_stage",
+          "type": "string",
+          "description": "Choose exactly one matching label from $procedure_stages; use idle when no work is visible or other when none matches. Choose a stage only from direct visible evidence. This maps observable SOP evidence and is not a compliance decision"
+        },
+        {
+          "name": "tools_in_use",
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Concrete visible tools actively used during the clip"
+        },
+        {
+          "name": "parts_in_use",
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Concrete visible service or replacement parts used during the clip"
+        },
+        {
+          "name": "equipment_state",
+          "type": "string",
+          "description": "A short canonical visible equipment state such as panel closed, panel open, component removed, component installed, or not observable; reuse identical wording while the visible state is unchanged"
+        },
+        {
+          "name": "safety_state",
+          "type": "string",
+          "description": "Use not assessable, no visible review trigger, or review: followed by concise visible evidence needing human safety review. Review cues include a visible suspended load, apparent 2D person/load proximity, work on a truck bed or elevated surface, moving equipment near people, visible PPE state, a LOTO device, guard or panel restoration, or tools and parts remaining at analysis end. PPE that is visibly present is context, not a hazard. Only flag PPE when a clearly visible, hazard-relevant activity makes the observable PPE state decision-relevant; otherwise use not assessable. Describe only what is visible and never infer physical depth. Never certify no issue, infer de-energization, or declare compliance"
+        },
+        {
+          "name": "exception",
+          "type": "string",
+          "description": "A concise visible workflow or safety deviation, or none. Do not declare legal or safety compliance"
+        }
+      ]
+    }
+  ]
+}

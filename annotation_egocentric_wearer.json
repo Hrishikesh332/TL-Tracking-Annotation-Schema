@@ -1,0 +1,80 @@
+{
+  "type": "segment_definitions",
+  "segment_time_format": "seconds",
+  "segment_definitions": [
+    {
+      "id": "annotations",
+      "description": "Treat the source as human-worn first-person task video, independently from the fixed-camera Field Service profile. Cover the complete supplied timeline with consecutive, non-overlapping semantic episodes and no gaps. Start a new episode when the observable wearer action, hand-object relation, central task object, procedure stage, object appearance, or camera-motion regime meaningfully changes. Every episode must be no longer than $maximum_segment_seconds seconds. Do not summarize a long interval using only its dominant activity. If the visible action is unchanged, emit another consecutive observation with the same semantics; the new boundary is continued observation, not an invented action change. Requested observation density: $requested_density observations per minute; this is the minimum review cadence, not permission to carry a dominant label over uninspected footage. Post-processing cannot recover a visible action change missed here. Report only visible evidence. Do not identify the wearer, infer occupation or intent, upgrade proximity to contact or tool use, or certify task completion, equipment state, safety, or compliance. If both hands visibly manipulate different controls or objects at the same time, describe both in the same episode instead of alternating unsupported single-hand actions. Name an exact machine part or tool only when distinctive visible geometry supports it; do not guess chuck, tailstock, headstock, or wrench from expected machine layout. Prefer a visible generic noun such as machine handwheel, rotating fixture, fastener, or small L-shaped tool when the exact identity is uncertain.",
+      "fields": [
+        {
+          "name": "scene_caption",
+          "type": "string",
+          "description": "A concise factual caption of the visible wearer-view scene"
+        },
+        {
+          "name": "environment",
+          "type": "string",
+          "description": "A short visible environment label such as workbench, machine station, assembly area, utility area, or not observable"
+        },
+        {
+          "name": "wearer_action",
+          "type": "string",
+          "description": "A concise present-tense phrase naming the camera wearer's observable action, or not observable. Include simultaneous visible actions by both hands in one phrase and keep camera motion separate"
+        },
+        {
+          "name": "action_description",
+          "type": "string",
+          "description": "One precise factual sentence describing the visible action. Do not infer intent, force, torque, hidden contact, successful completion, or exact machine-part identity from layout alone"
+        },
+        {
+          "name": "spatial_context",
+          "type": "string",
+          "description": "Visible 2D relationships among hands and task objects; use not observable when framing, blur, or occlusion prevents assessment. Do not infer depth"
+        },
+        {
+          "name": "evidence_quality",
+          "type": "string",
+          "description": "Choose exactly one: clear, partial, occluded, or not observable, based on visibility of the action and central task object under wearer-camera motion"
+        },
+        {
+          "name": "localization_targets",
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Up to 12 canonical singular labels for concrete, boxable foreground task objects visible in this episode. Prefer specific nouns such as mug, motor, wire coil, control button, or screwdriver over generic part, component, tool, object, or workpiece. Exclude person, wearer body, hands, groups, actions, states, text, regions, backgrounds, and duplicate synonyms"
+        },
+        {
+          "name": "procedure_stage",
+          "type": "string",
+          "description": "Choose exactly one matching label from $procedure_stages; use idle when no task action is visible or other when none matches. Map only direct visible evidence; this is not a completion decision"
+        },
+        {
+          "name": "visible_tools",
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Specific singular tool nouns clearly visible in the episode. Do not infer that a nearby object is being used or promote a fixture or workpiece to a tool. When tool type is visually ambiguous, use a shape-based noun such as small L-shaped tool"
+        },
+        {
+          "name": "task_objects",
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Specific singular nouns for the central visible objects being approached, held, positioned, adjusted, or inspected. Use an exact machine-part name only when its visible geometry supports that identity"
+        },
+        {
+          "name": "hand_object_interaction",
+          "type": "string",
+          "description": "A conservative visible relation such as hand near mug, fingers around knob, or tool tip aligned with fastener; describe left- and right-hand relations separately when both are visible. Use none or not observable. Do not infer contact from proximity alone"
+        },
+        {
+          "name": "object_state_change",
+          "type": "string",
+          "description": "A directly visible before-to-after appearance, position, or orientation change of a named object, or none/not observable. Do not infer hidden state"
+        },
+        {
+          "name": "camera_motion",
+          "type": "string",
+          "description": "Choose a concise visible camera-motion label: stable, small head motion, panning, walking motion, rapid motion, or not observable"
+        }
+      ]
+    }
+  ]
+}
